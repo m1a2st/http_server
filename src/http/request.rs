@@ -1,6 +1,9 @@
 use super::method::Method;
+use std::convert::TryFrom;
+use std::str;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult, write};
+use std::str::Utf8Error;
 
 pub struct Request {
     path: String,
@@ -13,8 +16,18 @@ impl TryFrom<&[u8]> for Request {
 
     // GET /search?name=abc&sort=1 HTTP/1.1
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        let request = str::from_utf8(value)?;
         todo!()
     }
+}
+
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+    for (i, c) in request.chars().enumerate() {
+        if c == ' ' || c == '\r' {
+            return Some((&request[..i], &request[i + 1..]));
+        }
+    }
+    None
 }
 
 pub enum ParseError {
@@ -44,6 +57,12 @@ impl ParseError {
             Self::InvalidProtocol => "Invalid protocol",
             Self::InvalidMethod => "Invalid method",
         }
+    }
+}
+
+impl From<Utf8Error> for ParseError {
+    fn from(_: Utf8Error) -> Self {
+        Self::InvalidEncoding
     }
 }
 
