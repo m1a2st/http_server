@@ -4,3 +4,4 @@ pub use request::ParseError;
 
 mod request;
 mod method;
+mod query_string;
