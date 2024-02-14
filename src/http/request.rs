@@ -13,7 +13,7 @@ pub struct Request<'buf> {
     method: Method,
 }
 
-impl<'buf> Request {
+impl<'buf> Request<'_> {
     pub fn path(&self) -> &str {
         &self.path
     }
