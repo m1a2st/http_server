@@ -1,10 +1,11 @@
 use std::io::{Read, Write};
 use std::net::TcpListener;
+use futures::executor::ThreadPool;
 use crate::http::{ParseError, Request, Response, StatusCode};
 
 pub trait Handler {
     fn handle_request(&mut self, request: &Request) -> Response;
-    fn handle_bad_request(&mut self, e: &ParseError) -> Response{
+    fn handle_bad_request(&mut self, e: &ParseError) -> Response {
         println!("Failed to parse request: {}", e);
         Response::new(StatusCode::BadRequest, None)
     }
@@ -27,6 +28,7 @@ impl Server {
         let listener = TcpListener::bind(&self.addr).unwrap();
 
         loop {
+            let thread_pool = ThreadPool::new();
             match listener.accept() {
                 Ok((mut stream, _)) => {
                     let mut buffer = [0; 1024];

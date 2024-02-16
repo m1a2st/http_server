@@ -9,6 +9,7 @@ use std::env;
 mod http;
 mod server;
 mod website_handler;
+mod thread_pool;
 
 fn main() {
     let default_path = format!("/{}/public", env!("CARGO_MANIFEST_DIR"));
